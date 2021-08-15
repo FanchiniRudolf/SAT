@@ -3,7 +3,7 @@ import os
 from tkinter import Tk
 from tkinter.filedialog import askdirectory
 
-
+TAXRATE = 0.16
 
 
 def getAmounts(xmlPathName):
@@ -11,13 +11,13 @@ def getAmounts(xmlPathName):
     DOMTree = xml.dom.minidom.parse(xmlPathName)
     collection = DOMTree.documentElement
 
-    price = getAttribute("cfdi:Concepto", "Importe", collection)
-    tax = getAttribute("cfdi:Traslado", "Importe", collection)
-
+    tax = getAttribute("cfdi:Impuestos", "TotalImpuestosTrasladados", collection)
+    price = tax/TAXRATE
+    print("Precio:", price, "Impuesto:", tax)
     return price, tax
 
 def getAttribute(tag, attribute, collection):
-    elementTag = collection.getElementsByTagName(tag).item(0)
+    elementTag = collection.getElementsByTagName(tag)[-1]
     if (elementTag.hasAttribute(attribute)):
        return float(elementTag.getAttribute(attribute))
 
@@ -26,14 +26,16 @@ def main():
 
     # shows dialog box and return the path
     folderPath = askdirectory(title='Select Folder')+"/"
+    print(folderPath)
     files = os.listdir(folderPath)
 
     for file in files:
         if (".xml" in file):
+            print(file)
             totalPrice, taxTotal = map(float.__add__,
                                        (totalPrice, taxTotal), getAmounts(folderPath+file))
-    print("Precio:", totalPrice, "Impuesto:", taxTotal)
+            print("Precio total:", totalPrice, "Impuesto total:", taxTotal)
+    print("Precio total:", totalPrice, "Impuesto total:", taxTotal)
 
 if __name__ == '__main__':
     main()
-    
