@@ -1,6 +1,5 @@
 import xml.dom.minidom
 import os
-from tkinter import Tk
 from tkinter.filedialog import askdirectory
 
 TAXRATE = 0.16
